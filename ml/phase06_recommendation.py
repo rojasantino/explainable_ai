@@ -12,9 +12,17 @@ Output:
 
 import pandas as pd
 import numpy as np
-import sys, os; sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".")); from ml.models_classes import CollaborativeFilter, ContentBasedFilter
+import sys, os
+
+# Add project ROOT to path so models_classes can be found whether
+# this script is run from ml/ folder or from project root
+_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+from ml.models_classes import CollaborativeFilter, ContentBasedFilter
 from sklearn.metrics.pairwise import cosine_similarity
-import joblib, os, warnings
+import joblib, warnings
 warnings.filterwarnings('ignore')
 
 DATA_DIR  = os.path.join(os.path.dirname(__file__), '..', 'data')

@@ -1,0 +1,55 @@
+<div class="page">
+  <h2 class="page-title">Customer Personalization</h2>
+  <div class="search-box">
+    <input type="number" [(ngModel)]="userId" placeholder="Enter Customer ID (101 to 600)" (keyup.enter)="search()" />
+    <button (click)="search()">Analyze Customer</button>
+  </div>
+  <div *ngIf="loading" class="loading">Analyzing customer...</div>
+  <div *ngIf="error" class="error-msg">{{ error }}</div>
+  <div *ngIf="profile && !loading">
+    <div class="section-card">
+      <div class="profile-header">
+        <div class="avatar">{{ profile.user_id }}</div>
+        <div>
+          <div class="profile-name">Customer #{{ profile.user_id }}</div>
+          <div class="profile-meta">{{ profile.age }} yrs | {{ profile.gender }} | {{ profile.location }}</div>
+          <span [ngStyle]="getSegStyle(profile.segment)">{{ profile.segment }}</span>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-label">Orders</div><div class="stat-value">{{ profile.total_orders }}</div></div>
+        <div class="stat"><div class="stat-label">Total Spent</div><div class="stat-value">Rs.{{ profile.total_spend | number:'1.0-0' }}</div></div>
+        <div class="stat"><div class="stat-label">Buy Probability</div>
+          <div class="stat-value" [style.color]="getProbColor(profile.buy_probability)">{{ pct(profile.buy_probability) }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-card">
+      <h3>Purchase Probability</h3>
+      <div class="prob-bar-wrap">
+        <div class="prob-bar-fill" [style.width]="pct(profile.buy_probability)" [style.background]="getProbColor(profile.buy_probability)"></div>
+      </div>
+      <p class="prob-label">{{ pct(profile.buy_probability) }} chance of purchasing</p>
+    </div>
+    <div class="section-card">
+      <h3>Recommended Products</h3>
+      <p class="sub">Based on customers similar to you</p>
+      <div class="rec-grid">
+        <div class="rec-card" *ngFor="let pid of profile.recommendations">
+          <div class="rec-id">{{ pid }}</div>
+          <div class="rec-label">Recommended</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-card explanation">
+      <h3>Why these recommendations?</h3>
+      <p class="sub">Powered by SHAP Explainable AI</p>
+      <div class="reason" *ngFor="let r of profile.reasons; let i = index">
+        <span class="reason-icon">{{ i === 0 ? 'â˜…' : i === 1 ? 'â–²' : 'â—' }}</span>
+        {{ r }}
+      </div>
+    </div>
+  </div>
+</div>
+
+

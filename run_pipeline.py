@@ -18,14 +18,18 @@ import subprocess, sys, time, os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+# sys.executable = the exact Python running right now (your .venv Python)
+# This guarantees every subprocess uses the SAME venv, not system Python
+PY = sys.executable
+
 steps = [
-    ("Phase 00 — Generate Dataset",      "python data/generate_data.py"),
-    ("Phase 02 — Data Cleaning",         "python ml/phase02_data_cleaning.py"),
-    ("Phase 03 — Feature Engineering",   "python ml/phase03_feature_engineering.py"),
-    ("Phase 04 — Customer Segmentation", "python ml/phase04_segmentation.py"),
-    ("Phase 05 — Purchase Prediction",   "python ml/phase05_prediction.py"),
-    ("Phase 06 — Recommendation System", "python ml/phase06_recommendation.py"),
-    ("Phase 07 — SHAP Explainable AI",   "python explain/phase07_shap_explain.py"),
+    ("Phase 00 — Generate Dataset",      [PY, "data/generate_data.py"]),
+    ("Phase 02 — Data Cleaning",         [PY, "ml/phase02_data_cleaning.py"]),
+    ("Phase 03 — Feature Engineering",   [PY, "ml/phase03_feature_engineering.py"]),
+    ("Phase 04 — Customer Segmentation", [PY, "ml/phase04_segmentation.py"]),
+    ("Phase 05 — Purchase Prediction",   [PY, "ml/phase05_prediction.py"]),
+    ("Phase 06 — Recommendation System", [PY, "ml/phase06_recommendation.py"]),
+    ("Phase 07 — SHAP Explainable AI",   [PY, "explain/phase07_shap_explain.py"]),
 ]
 
 print("=" * 55)
@@ -37,7 +41,7 @@ for i, (name, cmd) in enumerate(steps, 1):
     print(f"\n[{i}/{len(steps)}] {name}")
     print("-" * 45)
     t0  = time.time()
-    ret = subprocess.run(cmd.split(), capture_output=False)
+    ret = subprocess.run(cmd, capture_output=False)
     elapsed = time.time() - t0
     if ret.returncode != 0:
         print(f"\nERROR in step {i}. Stopping pipeline.")
