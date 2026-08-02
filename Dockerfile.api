@@ -1,0 +1,49 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dockerfile — Flask API (customer-ai backend)
+# Build:  docker build -f docker/Dockerfile.api -t customer-ai-api .
+# Run:    docker run -p 5000:5000 customer-ai-api
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Stage 1: base Python image (slim = smaller size)
+FROM python:3.11-slim AS base
+
+# Set working directory inside container
+WORKDIR /app
+
+# Prevent Python from writing .pyc files (keeps container clean)
+ENV PYTHONDONTWRITEBYTECODE=1
+# Prevent Python from buffering stdout/stderr (logs appear immediately)
+ENV PYTHONUNBUFFERED=1
+
+# ── Install system dependencies ───────────────────────────────────────────
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Install Python dependencies ───────────────────────────────────────────
+# Copy requirements first (Docker layer caching — only reinstall if this changes)
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# ── Copy application code ─────────────────────────────────────────────────
+COPY api/          ./api/
+COPY ml/           ./ml/
+COPY explain/      ./explain/
+COPY models/       ./models/
+COPY data/         ./data/
+
+# ── Create non-root user (security best practice) ─────────────────────────
+RUN useradd --create-home --shell /bin/bash appuser
+USER appuser
+
+# ── Expose Flask port ─────────────────────────────────────────────────────
+EXPOSE 5000
+
+# ── Health check (Docker will mark container unhealthy if this fails) ─────
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"
+
+# ── Start command ─────────────────────────────────────────────────────────
+CMD ["python", "api/app.py"]

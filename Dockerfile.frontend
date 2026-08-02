@@ -1,0 +1,40 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dockerfile — Angular Frontend (customer-ai-frontend)
+# Multi-stage build: Build in Node, serve with Nginx
+# Build:  docker build -f docker/Dockerfile.frontend -t customer-ai-frontend .
+# Run:    docker run -p 80:80 customer-ai-frontend
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Stage 1: BUILD (Node.js) ──────────────────────────────────────────────
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files first (caching)
+COPY customer-ai-frontend/package*.json ./
+RUN npm ci --silent
+
+# Copy source code
+COPY customer-ai-frontend/ .
+
+# Build Angular for production
+RUN npm run build -- --configuration=production
+
+# ── Stage 2: SERVE (Nginx) ────────────────────────────────────────────────
+FROM nginx:alpine AS production
+
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy our custom nginx config
+COPY docker/nginx.conf /etc/nginx/conf.d/
+
+# Copy built Angular files from Stage 1
+COPY --from=builder /app/dist/customer-ai-frontend/browser /usr/share/nginx/html
+
+EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=5s \
+    CMD wget -q --spider http://localhost:80 || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]

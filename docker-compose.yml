@@ -1,0 +1,82 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# docker-compose.yml — Full Stack: Flask API + Angular + MLflow
+# Usage:
+#   docker-compose up --build          → build and start all services
+#   docker-compose up -d               → start in background (detached)
+#   docker-compose down                → stop all services
+#   docker-compose logs api            → view Flask API logs
+#   docker-compose ps                  → check running containers
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+
+  # ── Flask API ─────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: customer-ai-api
+    ports:
+      - "5000:5000"           # host:container
+    volumes:
+      - ./models:/app/models  # mount models directory (easy to update models)
+      - ./data:/app/data      # mount data directory
+    environment:
+      - FLASK_ENV=production
+      - MLFLOW_TRACKING_URI=http://mlflow:5001
+    depends_on:
+      - mlflow
+    restart: unless-stopped
+    networks:
+      - customer-ai-net
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ── Angular Frontend ──────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: customer-ai-frontend
+    ports:
+      - "80:80"               # Access UI at http://localhost
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - customer-ai-net
+
+  # ── MLflow Tracking Server ────────────────────────────────────────────────
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: customer-ai-mlflow
+    ports:
+      - "5001:5001"           # Access MLflow UI at http://localhost:5001
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5001
+      --backend-store-uri sqlite:///mlflow/mlflow.db
+      --default-artifact-root ./mlflow/artifacts
+    volumes:
+      - mlflow-data:/mlflow
+    restart: unless-stopped
+    networks:
+      - customer-ai-net
+
+# ── Volumes ───────────────────────────────────────────────────────────────
+volumes:
+  mlflow-data:
+    driver: local
+
+# ── Networks ──────────────────────────────────────────────────────────────
+networks:
+  customer-ai-net:
+    driver: bridge
