@@ -25,22 +25,24 @@ export class PersonalizationComponent {
     this.profile = null;
     this.api.getCustomerProfile(this.userId).subscribe({
       next: (res) => { this.profile = res.profile; this.loading = false; },
-      error: ()   => { this.error = 'User ' + this.userId + ' not found. Try IDs 101 to 600.'; this.loading = false; }
+      error: ()   => { this.error = 'Customer ID ' + this.userId + ' not found. Valid IDs: 101 to 600.'; this.loading = false; }
     });
   }
 
-  getProbColor(prob: number): string {
-    if (prob >= 0.7) return '#3B6D11';
-    if (prob >= 0.4) return '#854F0B';
-    return '#A32D2D';
+  probColor(p: number): string {
+    if (p >= 0.7) return '#15803d'; if (p >= 0.4) return '#b45309'; return '#b91c1c';
   }
-
-  getSegStyle(seg: string): object {
-    const c: any = { 'High Value':'#185FA5','Loyal':'#3B6D11','At Risk':'#A32D2D','New Customer':'#854F0B' };
-    return { background: c[seg]||'#888', color:'white', padding:'3px 10px', borderRadius:'12px', fontSize:'12px', fontWeight:'500' };
+  probBg(p: number): string {
+    if (p >= 0.7) return '#dcfce7'; if (p >= 0.4) return '#fef3c7'; return '#fee2e2';
   }
-
-  pct(prob: number): string { return (prob * 100).toFixed(1) + '%'; }
+  probLabel(p: number): string {
+    if (p >= 0.7) return 'High'; if (p >= 0.4) return 'Medium'; return 'Low';
+  }
+  segStyle(seg: string): object {
+    const c: any = { 'High Value':'#1d4ed8','Loyal':'#15803d','At Risk':'#b91c1c','New Customer':'#b45309' };
+    const b: any = { 'High Value':'#dbeafe','Loyal':'#dcfce7','At Risk':'#fee2e2','New Customer':'#fef3c7' };
+    return { color: c[seg]||'#475569', background: b[seg]||'#f1f5f9',
+             padding:'4px 12px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' };
+  }
+  pct(p: number): string { return (p * 100).toFixed(1) + '%'; }
 }
-
-

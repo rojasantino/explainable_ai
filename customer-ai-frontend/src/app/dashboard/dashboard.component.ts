@@ -19,19 +19,19 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.api.getDashboardStats().subscribe({
       next: (res) => { this.stats = res.stats; this.loading = false; },
-      error: ()    => { this.error = 'Cannot connect to API. Start Flask: python api/app.py'; this.loading = false; }
+      error: ()   => { this.error = 'Flask API not running. Open a new terminal and run: python api/app.py'; this.loading = false; }
     });
   }
 
-  formatCurrency(val: number): string {
-    return 'Rs.' + Math.round(val).toLocaleString('en-IN');
+  fmt(val: number): string { return 'Rs.' + Math.round(val).toLocaleString('en-IN'); }
+
+  segColor(seg: string): string {
+    const m: any = { 'High Value':'#1d4ed8','Loyal':'#15803d','At Risk':'#b91c1c','New Customer':'#b45309' };
+    return m[seg] || '#475569';
   }
 
-  getSegmentColor(seg: string): string {
-    const map: any = { 'High Value':'#185FA5','Loyal':'#3B6D11','At Risk':'#A32D2D','New Customer':'#854F0B' };
-    return map[seg] || '#888';
+  segBg(seg: string): string {
+    const m: any = { 'High Value':'#dbeafe','Loyal':'#dcfce7','At Risk':'#fee2e2','New Customer':'#fef3c7' };
+    return m[seg] || '#f1f5f9';
   }
 }
-
-
-

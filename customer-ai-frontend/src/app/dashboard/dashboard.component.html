@@ -1,47 +1,77 @@
-<div class="page">
-  <h2 class="page-title">Analytics Dashboard</h2>
-  <div *ngIf="loading" class="loading">Loading dashboard data...</div>
-  <div *ngIf="error" class="error-msg">{{ error }}</div>
-  <div *ngIf="stats && !loading">
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-label">Total Customers</div>
-        <div class="kpi-value">{{ stats.total_customers | number }}</div>
+<div class='page'>
+
+  <div class='page-header'>
+    <h1 class='page-title'>Analytics Dashboard</h1>
+    <p class='page-sub'>Real-time customer behavior insights</p>
+  </div>
+
+  <div *ngIf='loading' class='state-box'>
+    <div class='spinner'></div>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <div *ngIf='error' class='error-card'>
+    <div class='error-icon'>!</div>
+    <div>
+      <strong>Connection Failed</strong>
+      <p>{{ error }}</p>
+    </div>
+  </div>
+
+  <div *ngIf='stats && !loading'>
+
+    <div class='kpi-grid'>
+      <div class='kpi-card'>
+        <div class='kpi-icon blue'>C</div>
+        <div class='kpi-label'>Total Customers</div>
+        <div class='kpi-value'>{{ stats.total_customers | number }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Total Orders</div>
-        <div class="kpi-value">{{ stats.total_orders | number }}</div>
+      <div class='kpi-card'>
+        <div class='kpi-icon green'>O</div>
+        <div class='kpi-label'>Total Orders</div>
+        <div class='kpi-value'>{{ stats.total_orders | number }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Total Revenue</div>
-        <div class="kpi-value">{{ formatCurrency(stats.total_revenue) }}</div>
+      <div class='kpi-card'>
+        <div class='kpi-icon purple'>R</div>
+        <div class='kpi-label'>Total Revenue</div>
+        <div class='kpi-value'>{{ fmt(stats.total_revenue) }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Avg Order Value</div>
-        <div class="kpi-value">{{ formatCurrency(stats.avg_order_value) }}</div>
+      <div class='kpi-card'>
+        <div class='kpi-icon orange'>A</div>
+        <div class='kpi-label'>Avg Order Value</div>
+        <div class='kpi-value'>{{ fmt(stats.avg_order_value) }}</div>
       </div>
     </div>
-    <div class="section-card">
-      <h3>Customer Segments</h3>
-      <div class="segment-grid">
-        <div class="segment-pill"
-             *ngFor="let seg of stats.segments | keyvalue"
-             [style.background]="getSegmentColor(seg.key.toString())">
-          <span class="seg-name">{{ seg.key }}</span>
-          <span class="seg-count">{{ seg.value }}</span>
+
+    <div class='row-2'>
+      <div class='card'>
+        <h3 class='card-title'>Customer Segments</h3>
+        <div class='seg-list'>
+          <div class='seg-row' *ngFor='let seg of stats.segments | keyvalue'
+               [style.borderLeftColor]='segColor(seg.key.toString())'>
+            <div class='seg-info'>
+              <span class='seg-badge' [style.color]='segColor(seg.key.toString())'
+                    [style.background]='segBg(seg.key.toString())'>{{ seg.key }}</span>
+            </div>
+            <span class='seg-num'>{{ seg.value }} customers</span>
+          </div>
+        </div>
+      </div>
+
+      <div class='card'>
+        <h3 class='card-title'>Top Products</h3>
+        <div class='prod-list'>
+          <div class='prod-row' *ngFor='let p of stats.top_products; let i = index'>
+            <span class='prod-rank'># {{ i + 1 }}</span>
+            <span class='prod-id'>{{ p.product_id }}</span>
+            <div class='prod-bar-wrap'>
+              <div class='prod-bar' [style.width.%]='(p.total_sold / stats.top_products[0].total_sold) * 100'></div>
+            </div>
+            <span class='prod-sold'>{{ p.total_sold }}</span>
+          </div>
         </div>
       </div>
     </div>
-    <div class="section-card">
-      <h3>Top Products</h3>
-      <div class="product-row" *ngFor="let p of stats.top_products; let i = index">
-        <span class="rank">{{ i + 1 }}</span>
-        <span class="prod-id">{{ p.product_id }}</span>
-        <div class="bar-wrap">
-          <div class="bar-fill" [style.width.%]="(p.total_sold / stats.top_products[0].total_sold) * 100"></div>
-        </div>
-        <span class="sold-count">{{ p.total_sold }} sold</span>
-      </div>
-    </div>
+
   </div>
 </div>

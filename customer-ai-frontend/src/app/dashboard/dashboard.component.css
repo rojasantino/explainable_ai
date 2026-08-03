@@ -1,21 +1,53 @@
-.page { padding:24px; max-width:960px; margin:0 auto; font-family:sans-serif; }
-.page-title { font-size:22px; font-weight:600; margin-bottom:20px; color:#1a1a1a; }
-.loading { text-align:center; padding:40px; color:#888; }
-.error-msg { background:#FCEBEB; color:#A32D2D; padding:12px 16px; border-radius:8px; margin-bottom:16px; }
-.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
-.kpi-card { background:#f5f5f3; border-radius:10px; padding:16px; }
-.kpi-label { font-size:12px; color:#666; margin-bottom:6px; }
-.kpi-value { font-size:22px; font-weight:600; color:#185FA5; }
-.section-card { background:white; border:0.5px solid #ddd; border-radius:12px; padding:20px; margin-bottom:16px; }
-.section-card h3 { font-size:15px; font-weight:600; margin-bottom:14px; }
-.segment-grid { display:flex; flex-wrap:wrap; gap:10px; }
-.segment-pill { border-radius:20px; padding:8px 16px; color:white; display:flex; align-items:center; gap:8px; }
-.seg-name { font-size:13px; font-weight:500; }
-.seg-count { font-size:16px; font-weight:700; }
-.product-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:0.5px solid #eee; }
-.rank { width:20px; font-size:12px; color:#888; }
-.prod-id { width:70px; font-size:13px; font-weight:500; }
-.bar-wrap { flex:1; background:#eee; border-radius:4px; height:8px; }
-.bar-fill { background:#185FA5; border-radius:4px; height:100%; }
-.sold-count { font-size:12px; color:#666; min-width:60px; text-align:right; }
-@media(max-width:600px) { .kpi-grid { grid-template-columns:1fr 1fr; } }
+.page { padding:32px; max-width:1100px; margin:0 auto; font-family:'Segoe UI',sans-serif; }
+.page-header { margin-bottom:28px; }
+.page-title { font-size:24px; font-weight:700; color:#0f172a; margin:0 0 4px; }
+.page-sub { font-size:14px; color:#64748b; margin:0; }
+
+.state-box { display:flex; flex-direction:column; align-items:center;
+             padding:60px; color:#64748b; gap:16px; }
+.spinner { width:36px; height:36px; border:3px solid #e2e8f0;
+           border-top-color:#3b82f6; border-radius:50%; animation:spin 1s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.error-card { display:flex; align-items:flex-start; gap:14px; background:#fff1f2;
+              border:1px solid #fecaca; border-radius:12px; padding:18px 20px; margin-bottom:24px; }
+.error-icon { background:#ef4444; color:white; font-weight:800; font-size:13px;
+              width:28px; height:28px; border-radius:50%; display:flex;
+              align-items:center; justify-content:center; flex-shrink:0; }
+.error-card strong { font-size:14px; color:#991b1b; }
+.error-card p { font-size:13px; color:#dc2626; margin:4px 0 0; }
+
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+.kpi-card { background:white; border:1px solid #e2e8f0; border-radius:14px;
+            padding:20px; display:flex; flex-direction:column; gap:8px;
+            box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.kpi-icon { width:36px; height:36px; border-radius:10px; font-size:12px; font-weight:800;
+            display:flex; align-items:center; justify-content:center; color:white; }
+.kpi-icon.blue { background:#3b82f6; }
+.kpi-icon.green { background:#22c55e; }
+.kpi-icon.purple { background:#8b5cf6; }
+.kpi-icon.orange { background:#f97316; }
+.kpi-label { font-size:12px; color:#64748b; font-weight:500; }
+.kpi-value { font-size:22px; font-weight:700; color:#0f172a; }
+
+.row-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.card { background:white; border:1px solid #e2e8f0; border-radius:14px;
+        padding:20px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+.card-title { font-size:15px; font-weight:600; color:#0f172a; margin:0 0 16px; }
+
+.seg-list { display:flex; flex-direction:column; gap:10px; }
+.seg-row { display:flex; justify-content:space-between; align-items:center;
+           padding:10px 14px; border-radius:8px; background:#f8fafc;
+           border-left:3px solid #cbd5e1; }
+.seg-badge { padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+.seg-num { font-size:13px; color:#475569; font-weight:500; }
+
+.prod-list { display:flex; flex-direction:column; gap:10px; }
+.prod-row { display:flex; align-items:center; gap:10px; }
+.prod-rank { font-size:12px; color:#94a3b8; width:28px; font-weight:600; }
+.prod-id { font-size:13px; font-weight:600; color:#0f172a; width:56px; }
+.prod-bar-wrap { flex:1; background:#f1f5f9; border-radius:4px; height:8px; }
+.prod-bar { background:#3b82f6; border-radius:4px; height:100%; transition:width .4s; }
+.prod-sold { font-size:12px; color:#64748b; min-width:40px; text-align:right; }
+
+@media(max-width:768px) { .kpi-grid { grid-template-columns:1fr 1fr; } .row-2 { grid-template-columns:1fr; } }
