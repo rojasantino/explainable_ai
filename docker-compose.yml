@@ -16,7 +16,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: docker/Dockerfile.api
+      dockerfile: Dockerfile.api
     container_name: customer-ai-api
     ports:
       - "5000:5000"           # host:container
@@ -43,7 +43,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.frontend
+      dockerfile: Dockerfile.frontend
     container_name: customer-ai-frontend
     ports:
       - "80:80"               # Access UI at http://localhost

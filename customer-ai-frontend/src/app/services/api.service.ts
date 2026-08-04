@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private base = 'http://localhost:5000/api';
+  private base = '/api';
   constructor(private http: HttpClient) {}
   getCustomerProfile(userId: number): Observable<any> {
     return this.http.get(this.base + '/customer/' + userId);

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
@@ -10,11 +10,22 @@ import { ApiService } from '../services/api.service';
   templateUrl: './personalization.component.html',
   styleUrls: ['./personalization.component.css']
 })
-export class PersonalizationComponent {
+export class PersonalizationComponent implements OnDestroy {
   userId = 101;
   profile: any = null;
   loading = false;
   error = '';
+  loadStep = 0;
+  loadMsg = '';
+  private msgTimer: any;
+
+  private steps = [
+    { pct: 15, msg: 'Looking up customer profile...' },
+    { pct: 35, msg: 'Running purchase prediction model...' },
+    { pct: 55, msg: 'Generating recommendations...' },
+    { pct: 75, msg: 'Calculating SHAP explanations...' },
+    { pct: 90, msg: 'Preparing your results...' },
+  ];
 
   constructor(private api: ApiService) {}
 
@@ -23,11 +34,32 @@ export class PersonalizationComponent {
     this.loading = true;
     this.error = '';
     this.profile = null;
+    this.loadStep = 0;
+    this.loadMsg = this.steps[0].msg;
+
+    let i = 0;
+    this.msgTimer = setInterval(() => {
+      i = Math.min(i + 1, this.steps.length - 1);
+      this.loadStep = this.steps[i].pct;
+      this.loadMsg = this.steps[i].msg;
+    }, 400);
+
     this.api.getCustomerProfile(this.userId).subscribe({
-      next: (res) => { this.profile = res.profile; this.loading = false; },
-      error: ()   => { this.error = 'Customer ID ' + this.userId + ' not found. Valid IDs: 101 to 600.'; this.loading = false; }
+      next: (res) => {
+        clearInterval(this.msgTimer);
+        this.loadStep = 100;
+        this.loadMsg = 'Done!';
+        setTimeout(() => { this.profile = res.profile; this.loading = false; }, 300);
+      },
+      error: () => {
+        clearInterval(this.msgTimer);
+        this.error = 'Customer ID ' + this.userId + ' not found. Valid IDs: 101 to 600.';
+        this.loading = false;
+      }
     });
   }
+
+  ngOnDestroy(): void { clearInterval(this.msgTimer); }
 
   probColor(p: number): string {
     if (p >= 0.7) return '#15803d'; if (p >= 0.4) return '#b45309'; return '#b91c1c';

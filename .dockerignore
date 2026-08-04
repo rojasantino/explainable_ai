@@ -1,0 +1,12 @@
+node_modules
+**/node_modules
+.venv
+**/.venv
+dist
+**/dist
+.angular
+**/.angular
+__pycache__
+**/__pycache__
+*.pyc
+**/*.pyc

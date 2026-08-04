@@ -5,9 +5,23 @@
     <p class='page-sub'>Real-time customer behavior insights</p>
   </div>
 
-  <div *ngIf='loading' class='state-box'>
-    <div class='spinner'></div>
-    <p>Loading dashboard data...</p>
+  <!-- Loading skeleton -->
+  <div *ngIf='loading' class='skeleton-wrap'>
+    <div class='load-bar'>
+      <div class='load-progress'></div>
+    </div>
+    <p class='load-text'>{{ loadMsg }}</p>
+    <div class='skeleton-kpi'>
+      <div class='skel-card'><div class='skel-icon'></div><div class='skel-line short'></div><div class='skel-line long'></div></div>
+      <div class='skel-card'><div class='skel-icon'></div><div class='skel-line short'></div><div class='skel-line long'></div></div>
+      <div class='skel-card'><div class='skel-icon'></div><div class='skel-line short'></div><div class='skel-line long'></div></div>
+      <div class='skel-card'><div class='skel-icon'></div><div class='skel-line short'></div><div class='skel-line long'></div></div>
+    </div>
+    <div class='skeleton-rows'>
+      <div class='skel-row'></div>
+      <div class='skel-row'></div>
+      <div class='skel-row med'></div>
+    </div>
   </div>
 
   <div *ngIf='error' class='error-card'>
@@ -18,7 +32,7 @@
     </div>
   </div>
 
-  <div *ngIf='stats && !loading'>
+  <div *ngIf='stats && !loading' class='fade-in'>
 
     <div class='kpi-grid'>
       <div class='kpi-card'>
@@ -49,20 +63,17 @@
         <div class='seg-list'>
           <div class='seg-row' *ngFor='let seg of stats.segments | keyvalue'
                [style.borderLeftColor]='segColor(seg.key.toString())'>
-            <div class='seg-info'>
-              <span class='seg-badge' [style.color]='segColor(seg.key.toString())'
-                    [style.background]='segBg(seg.key.toString())'>{{ seg.key }}</span>
-            </div>
+            <span class='seg-badge' [style.color]='segColor(seg.key.toString())'
+                  [style.background]='segBg(seg.key.toString())'>{{ seg.key }}</span>
             <span class='seg-num'>{{ seg.value }} customers</span>
           </div>
         </div>
       </div>
-
       <div class='card'>
         <h3 class='card-title'>Top Products</h3>
         <div class='prod-list'>
           <div class='prod-row' *ngFor='let p of stats.top_products; let i = index'>
-            <span class='prod-rank'># {{ i + 1 }}</span>
+            <span class='prod-rank'>#{{ i + 1 }}</span>
             <span class='prod-id'>{{ p.product_id }}</span>
             <div class='prod-bar-wrap'>
               <div class='prod-bar' [style.width.%]='(p.total_sold / stats.top_products[0].total_sold) * 100'></div>
